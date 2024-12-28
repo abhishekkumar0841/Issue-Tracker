@@ -1,12 +1,13 @@
 import { IssueStatusBadge, Link } from "@/app/components";
 import { Issue, Status } from "@prisma/client";
-import { ArrowUpIcon } from "@radix-ui/react-icons";
-import { Table } from "@radix-ui/themes";
+import { ChevronUpIcon } from "@radix-ui/react-icons";
+import { ChevronDownIcon, Flex, Table, Text } from "@radix-ui/themes";
 import NextLink from "next/link";
 
 export interface IssueQuery {
   status: Status;
   orderBy: keyof Issue;
+  sortOrder: "asc" | "desc";
   page: string;
 }
 
@@ -23,16 +24,34 @@ const IssueTable = async ({ searchParams, issues }: Props) => {
         <Table.Row>
           {columns.map((col) => (
             <Table.ColumnHeaderCell key={col.value} className={col.className}>
-              <NextLink
-                href={{
-                  query: { ...searchParamsObj, orderBy: col.value },
-                }}
-              >
-                {col.label}
-              </NextLink>
-              {col.value === searchParamsObj.orderBy && (
-                <ArrowUpIcon className="inline" />
-              )}
+              <Flex align={"center"} gap={"3"}>
+                <Text>{col.label}</Text>
+                <Flex direction={"column"} align={"center"}>
+                  <NextLink
+                    href={{
+                      query: {
+                        ...searchParamsObj,
+                        orderBy: col.value,
+                        sortOrder: col.desc,
+                      },
+                    }}
+                  >
+                    <ChevronUpIcon />
+                  </NextLink>
+
+                  <NextLink
+                    href={{
+                      query: {
+                        ...searchParamsObj,
+                        orderBy: col.value,
+                        sortOrder: col.asc,
+                      },
+                    }}
+                  >
+                    <ChevronDownIcon />
+                  </NextLink>
+                </Flex>
+              </Flex>
             </Table.ColumnHeaderCell>
           ))}
         </Table.Row>
@@ -63,11 +82,25 @@ const IssueTable = async ({ searchParams, issues }: Props) => {
 const columns: {
   label: string;
   value: keyof Issue;
+  asc: string;
+  desc: string;
   className?: string;
 }[] = [
-  { label: "Issue", value: "title" },
-  { label: "Status", value: "status", className: "hidden md:table-cell" },
-  { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
+  { label: "Issue", value: "title", asc: "asc", desc: "desc" },
+  {
+    label: "Status",
+    value: "status",
+    asc: "asc",
+    desc: "desc",
+    className: "hidden md:table-cell",
+  },
+  {
+    label: "Created",
+    value: "createdAt",
+    asc: "asc",
+    desc: "desc",
+    className: "hidden md:table-cell",
+  },
 ];
 
 export const columnNames = columns.map((column) => column.value);

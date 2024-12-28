@@ -13,14 +13,12 @@ interface Props {
 const IssuesPage = async ({ searchParams }: Props) => {
   const statuses = Object.values(Status); //['OPEN', 'IN_PROGRESS', 'CLOSED']
   // const searchParamsObj = await searchParams;
-  const {status, orderBy, page: pageNo}= await searchParams;
-  const filterStatus = statuses.includes(status)
-    ? status
-    : undefined;
+  const { status, orderBy, sortOrder, page: pageNo } = await searchParams;
+  const filterStatus = statuses.includes(status) ? status : undefined;
 
   // creating obj to sort issue by order
   const sortByOrder = columnNames.includes(orderBy)
-    ? { [orderBy]: "asc" }
+    ? { [orderBy]: sortOrder }
     : undefined;
 
   // for handling pagination
