@@ -5,7 +5,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { Button, Flex, Text } from "@radix-ui/themes";
+import { Button, Flex, Select, Text } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
@@ -18,8 +18,8 @@ interface Props {
 const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pageCount = Math.ceil(itemCount / pageSize); 
-  if (pageCount <= 1) return null;
+  const pageCount = Math.ceil(itemCount / pageSize);
+  if (pageCount <= 1) return null; // IS THAT REQUIRED
   const changePage = (page: number) => {
     // setting up new instance URLSp & initialize this with current query parameters
     const params = new URLSearchParams(searchParams);
@@ -28,6 +28,20 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   };
   return (
     <Flex align={"center"} gap={"2"}>
+      {/* PAGE SELECTOR */}
+      <Select.Root onValueChange={(pageNo) => changePage(parseInt(pageNo))}>
+        <Select.Trigger placeholder={searchParams.get("page")! || "1"} />
+        <Select.Content>
+          {Array(pageCount)
+            .fill("")
+            .map((_, index) => (
+              <Select.Item key={index + 1} value={String(index + 1)}>
+                {index + 1}
+              </Select.Item>
+            ))}
+        </Select.Content>
+      </Select.Root>
+
       <Text size={"2"}>
         Page {currentPage} of {pageCount}
       </Text>
